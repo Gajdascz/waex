@@ -43,11 +43,6 @@ export default tseslint.config(
       jsdoc.configs['flat/recommended-typescript']
     ],
   },
-  {
-    name: 'eslint.config/js',
-    files: ['**/*.js'],
-    extends: [jsdoc.configs['flat/recommended-typescript-flavor']]
-  },
   ...fixupConfigRules(prettierConfig)
 );
 
