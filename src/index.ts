@@ -1,37 +1,26 @@
 import chokidar from 'chokidar';
-import { execSync } from 'child_process';
-import chalk from 'chalk';
-    
+import ConfigAPI from './core/config/api.js';
+import { DEFAULT_CONFIG } from './core/base/constants.js';
+import { debounce } from './core/base/helpers.js';
 
+const api = new ConfigAPI(DEFAULT_CONFIG);
 
+const initWatcher = () => {
+  const watcher = chokidar.watch('./src/**/*.{js,ts}', {
+    ignored: /node_modules/,
+    persistent: true,
+    cwd: '.',
+  });
+  watcher.on(
+    'change',
+    debounce(async (path) => {
+      await api.executeCommands(String(path));
+      api.log(`File change detected at : ${path as string}`);
+    }, api.debounceRate),
+  );
+  watcher.on('error', (error:string) => {
+    api.log(`Watcher error: ${error}`);
+  });
+};
 
-// const watcher = {
-//   curr: null,
-//   fns: {
-//     formatAndLint: async (path) => {
-//       try{
-//         await runCommand('npx', ['prettier', '--write', path], 'prettier');
-//         await runCommand('npx', ['eslint', '--fix', path], 'eslint');
-//       } catch (err) {
-//         loggers.genErr(`(formatAndLint) ${err.message}`);
-//       }
-//     },
-//     runTSX: async () => runCommand('npm',['run','tsx'],'tsx')
-//   },
-//   async init() {
-//     this.curr = chokidar.watch('./src/**/*.{js,ts}', {
-//       ignored: /node_modules/,
-//       persistent: true,
-//       cwd: '.',
-//     });
-//     this.curr.on('change', debounce(async (path) => {
-//       loggers.fileChanged(path);
-//         await watcher.fns.formatAndLint(path);
-//         await watcher.fns.runTSX()
-//     }),DEBOUNCE_MS);
-//     watcher.curr.on('error', (error) => { loggers.genErr(`Watcher error: ${error}`); });
-//     await watcher.fns.runTSX()
-//   },
-// };
-
-// await watcher.init();
+initWatcher();

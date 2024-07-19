@@ -1,71 +1,60 @@
-import commandManager from '../command/commandManager.js';
-import indicatorManager from '../logger/logIndicatorManager.js';
-import { COMMANDS, LOGGER, } from '../base/constants.js';
-import type { CommandConfig, CommandManagerType } from '../command/commandManager.js';
-import type { IndicatorConfig } from '../logger/logIndicatorManager.js';
-import type Logger from '../logger/logger.js';
-
-interface CommandOptions {
-  loadDefaultCommands: boolean;
-  addCommands: CommandConfig | CommandConfig[],
-}
+import { CommandManager } from '../command/CommandManager.js';
+import { DEFAULT_CONFIG, INDICATORS } from '../base/constants.js';
+import type {
+  CommandConfig,
+  CommandManagerType,
+} from '../command/CommandManager.js';
+import { normalizeAsArray, flatMerge } from '../base/helpers.js';
+import type { LogLevel } from '../base/types.js';
+import { Logger } from '../logger/logger.js';
+import { type IndicatorConfig } from '../logger/IndicatorManager.js';
 
 interface LoggerOptions {
-  loadDefaultIndicators: boolean;
-  defaultLabel: string,
-  defaultLogMsgColor: string,
-  defaultErrorColor: string,
-  defaultWarningColor: string,
-  addIndicators: IndicatorConfig | IndicatorConfig[],
+  label: string;
+  logColor: string;
+  infoColor: string;
+  warningColor: string;
+  errorColor: string;
+  loadDefault: boolean;
+  addIndicators: IndicatorConfig | IndicatorConfig[];
+  level: LogLevel;
 }
 
 interface ConfigOptions {
-  debounceRate: number, 
-  commandOptions: CommandOptions,
-  loggerOptions: LoggerOptions,
+  debounceRate: number;
+  logger: LoggerOptions;
+  commands: CommandConfig[];
 }
 
 interface Configuration {
   debounceRate: number;
-  logger: Logger,
-  command: CommandManagerType
+  command: CommandManagerType;
+  logger: Logger;
 }
-const CONFIG_OPTIONS: ConfigOptions = {
-  debounceRate: APP_CONFIG.debounceRate,
-  appLabel: APP_CONFIG.label,
-  appErrorColor: APP_CONFIG.errorColor,
-  appErrorTintColor: APP_CONFIG.errorTint,
-  appLogMsgColor: APP_CONFIG.color,
-  loadDefaultIndicators: true,
-  loadDefaultCommands: true,
-  addCommands: [],
-  addIndicators: [],
-} as const
 
-export default (opts: Partial<ConfigOptions>): Configuration=> {
-  const { 
-    debounceRate = CONFIG_OPTIONS.debounceRate,
-    loadDefaultCommands = CONFIG_OPTIONS.loadDefaultCommands,
-    loadDefaultIndicators = CONFIG_OPTIONS.loadDefaultIndicators,
-    appLabel = CONFIG_OPTIONS.appLabel,
-    appErrorColor = CONFIG_OPTIONS.appErrorColor,
-    appErrorTintColor = CONFIG_OPTIONS.appErrorTintColor,
-    appLogMsgColor = CONFIG_OPTIONS.appLogMsgColor,
-    addCommands = CONFIG_OPTIONS.addCommands,
-    addIndicators = CONFIG_OPTIONS.addIndicators
-  } = opts
-  if(loadDefaultCommands) commandManager.create(COMMANDS);
-  if(loadDefaultIndicators) indicatorManager.create(INDICATORS);
-  commandManager.create(addCommands);
-  indicatorManager.create(addIndicators);
+const initialize = (opts?: Partial<ConfigOptions>): Configuration => {
+  const debounceRate = opts?.debounceRate ?? DEFAULT_CONFIG.debounceRate;
+  const loggerOptions = (
+    opts?.logger ?
+      flatMerge(DEFAULT_CONFIG.logger, opts.logger)
+    : DEFAULT_CONFIG.logger) as LoggerOptions;
+  
+  loggerOptions.addIndicators = normalizeAsArray(loggerOptions.addIndicators);
+
+  const indicators: IndicatorConfig[] =
+    loggerOptions.loadDefault ?
+      [...INDICATORS, ...loggerOptions.addIndicators]
+    : loggerOptions.addIndicators;
+
+  const logger = new Logger({ loggerDefaults: loggerOptions, indicators });
+
+  const command = new CommandManager(logger, opts?.commands);
+
   return {
-      debounceRate,
-      label: appLabel,
-      errorTint: appErrorTintColor,
-      color: appLogMsgColor,
-      errorColor?: appErrorColor,
-      command: commandManager,
-      logger: logManager
-    }
+    debounceRate,
+    command,
+    logger,
+  };
+};
 
-  }
+export { initialize, type ConfigOptions };

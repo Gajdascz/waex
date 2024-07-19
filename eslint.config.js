@@ -6,7 +6,7 @@ import prettierConfig from 'eslint-config-prettier';
 import jsdoc from 'eslint-plugin-jsdoc';
 
 export default tseslint.config(
-  {    
+  {
     ignores: [
       '**/build/**',
       '**/dist/**',
@@ -15,7 +15,7 @@ export default tseslint.config(
       '.gitignore',
       '**/*.md',
       '**/*LICENSE',
-    ]
+    ],
   },
   eslint.configs.recommended,
   {
@@ -25,7 +25,7 @@ export default tseslint.config(
       sourceType: 'module',
       globals: { ...globals.node },
     },
-    plugins: {jsdoc}
+    plugins: { jsdoc },
   },
   {
     name: 'eslint.config/ts',
@@ -40,11 +40,8 @@ export default tseslint.config(
     extends: [
       ...tseslint.configs.strictTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
-      jsdoc.configs['flat/recommended-typescript']
+      jsdoc.configs['flat/recommended-typescript'],
     ],
   },
-  ...fixupConfigRules(prettierConfig)
+  ...fixupConfigRules(prettierConfig),
 );
-
-
-

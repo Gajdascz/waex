@@ -1,4 +1,5 @@
-import type { CommandConfig } from "../command/commandManager.js";
+import type { CommandConfig } from '../command/CommandManager.js';
+import { type IndicatorConfig } from '../logger/IndicatorManager.js';
 
 const LOG_TYPES = {
   LOG: 'log',
@@ -7,14 +8,7 @@ const LOG_TYPES = {
   ERROR: 'error',
 } as const;
 
-//#region Defaults
-const LOGGER = {
-  TYPES: LOG_TYPES,
-  label: '[APP]',
-  color: '#87ceeb',
-  errorColor: '#9c0000',
-  warningColor: '#805500',
-  INDICATORS: [
+const INDICATORS: IndicatorConfig[] = [
   {
     key: 'neutral',
     level: LOG_TYPES.LOG,
@@ -27,10 +21,10 @@ const LOGGER = {
     color: '#006500',
     symbol: `✔`,
   },
-  { 
+  {
     key: 'warn',
     level: LOG_TYPES.WARN,
-    color:  '#ffff00',
+    color: '#ffff00',
     symbol: '⚠️',
   },
   {
@@ -39,11 +33,8 @@ const LOGGER = {
     color: '#ff5555',
     symbol: '✘',
   },
-] as const
+];
 
-}
-
-// TODO: Implement automated necessary package install and file configuration when loadDefaultCommands is true.
 const COMMANDS: CommandConfig[] = [
   {
     runner: 'npx',
@@ -51,21 +42,52 @@ const COMMANDS: CommandConfig[] = [
     args: ['--write'],
     label: '[PRETTIER]',
     logColor: '#56B3FF',
+    reqPath: true,
   },
   {
     runner: 'npx',
     cmd: 'eslint',
     args: ['--fix'],
     label: '[ESLINT]',
-    logColor: '#4B32C3'
+    logColor: '#4B32C3',
+    reqPath: true,
   },
   {
-    runner: 'npm run',
+    runner: 'npx',
     cmd: 'tsx',
-    args: [],
+    args: ['src/index.ts'],
     label: '[TSX]',
-    logColor: '#0FFFA0'
+    logColor: '#0FFFA0',
+    reqPath: false,
   },
-] as const
+] as const;
 
-export {  COMMANDS, LOGGER, LOG_TYPES };
+const LOGGER = {
+  types: LOG_TYPES,
+  defaults: {
+    label: '[APP]',
+    logColor: '#87ceeb',
+    infoColor: '#0dbaff',
+    errorColor: '#9c0000',
+    warningColor: '#805500',
+    loadDefault: true,
+    addIndicators: [],
+    level: LOG_TYPES.LOG,
+  },
+};
+
+const DEBOUNCE_RATE = 100;
+const DEFAULT_CONFIG = {
+  debounceRate: DEBOUNCE_RATE,
+  logger: { ...LOGGER.defaults },
+  commands: COMMANDS
+} as const;
+
+export {
+  DEFAULT_CONFIG,
+  DEBOUNCE_RATE,
+  INDICATORS,
+  COMMANDS,
+  LOGGER,
+  LOG_TYPES,
+};

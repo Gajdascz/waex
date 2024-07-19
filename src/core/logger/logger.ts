@@ -1,19 +1,23 @@
 import chalk from 'chalk';
-import { LOG_TYPES } from "../base/constants.js";
-import type { LogLevel } from "../base/types.js";
-import indicatorManager, { type IndicatorCstrArgs } from "./logIndicatorManager.js";
-
-
+import { LOG_TYPES } from '../base/constants.js';
+import type { LogLevel } from '../base/types.js';
+import {
+  IndicatorManager,
+  wrapIndicatorManager,
+  type CreateIndicatorArgs,
+} from './IndicatorManager.js';
 interface LoggerDefaults {
   label: string;
   logColor: string;
-  infoColor:string;
+  infoColor: string;
   errorColor: string;
   warningColor: string;
+  level: LogLevel;
 }
+
 interface LoggerCstrArgs {
-  loggerDefaults:LoggerDefaults;
-  indicators?: IndicatorCstrArgs;
+  loggerDefaults: LoggerDefaults;
+  indicators?: CreateIndicatorArgs;
 }
 
 interface LogDetail {
@@ -26,66 +30,45 @@ interface LogDetail {
   logColor?: string;
   infoColor?: string;
   errorColor?: string;
-  warningColor?:string;
+  warningColor?: string;
 }
-export type {LogDetail, LoggerDefaults, LoggerCstrArgs}
-
-const buildLogDetail = (d:LogDetail):LogDetail => ({
-  ...d
-})
-export { buildLogDetail }
-
 class Logger {
-  protected i = indicatorManager
-  private static instance:Logger;
-  private loggerDefaults: LoggerDefaults
-  private buildStr(s:LogDetail) {
-    let indicator: string|undefined = undefined;
-    if(s.indicatorKey) indicator = this.i.getIndicator(s.indicatorKey).str as string;
-    else if (s.level) indicator = this.i.getIndicatorByLevel(s.level).str; 
-    return `${indicator ? `${indicator} ` : ''}${s.label?s.label:''}${s.command ? ` ${s.command}`:''}${s.message}${s.detail?`\n${s.detail}`:''}` 
-  }
-  private process(logDetail: LogDetail) { 
-    const {
-        level = LOG_TYPES.LOG,
-        logColor = this.loggerDefaults.logColor,
-        infoColor = this.loggerDefaults.logColor,
-        errorColor = this.loggerDefaults.errorColor,
-        warningColor = this.loggerDefaults.warningColor,
-    } = logDetail
-    const str = this.buildStr(logDetail);
-    let msgColor;
-    switch(level) {
-      case LOG_TYPES.LOG:   msgColor = logColor; break;
-      case LOG_TYPES.INFO:  msgColor = infoColor; break;
-      case LOG_TYPES.WARN:  msgColor = warningColor; break;
-      case LOG_TYPES.ERROR: msgColor = errorColor; break;
-      default: msgColor = logColor; 
-    }
-    return {level, str: chalk.hex(msgColor)(str)};
-  }
-  private constructor(args: LoggerCstrArgs) {
-    const {loggerDefaults, indicators} = args;    
+  private i;
+  private loggerDefaults: LoggerDefaults;
+
+  constructor(args: LoggerCstrArgs) {
+    const { loggerDefaults, indicators } = args;
     this.loggerDefaults = loggerDefaults;
-    if(indicators) this.i.registerIndicator(indicators);
+    this.i = wrapIndicatorManager(new IndicatorManager(indicators));
   }
-  public static getInstance(args?: LoggerCstrArgs): Logger {
-    if(Logger.instance instanceof Logger) return Logger.instance;
-    if(args) {
-      Logger.instance = new Logger(args);
-      return Logger.instance;
+
+  private buildStr(s: LogDetail) {
+    let indicator: string | undefined = undefined;
+    if (s.indicatorKey)
+      indicator = this.i.getIndicator(s.indicatorKey).str as string;
+    else if (s.level) indicator = this.i.getIndicatorByLevel(s.level).str;
+    return `${indicator ? `${indicator} ` : ''}${s.label ? s.label : ''}${s.command ? ` ${s.command}` : ''}${s.message}${s.detail ? `\n${s.detail}` : ''}`;
+  }
+  private resolveColor(detail: LogDetail, level: LogLevel): string {
+    switch (level) {
+      case LOG_TYPES.INFO:
+        return detail.infoColor ?? this.loggerDefaults.infoColor;
+      case LOG_TYPES.WARN:
+        return detail.warningColor ?? this.loggerDefaults.warningColor;
+      case LOG_TYPES.ERROR:
+        return detail.errorColor ?? this.loggerDefaults.errorColor;
+      default:
+        return detail.logColor ?? this.loggerDefaults.logColor;
     }
-    throw new Error(`Logger not initialized and getLogger was not provided constructor arguments.`);
   }
-  public updateDefaults(d:Partial<LoggerDefaults>) {
-    this.loggerDefaults = { ...this.loggerDefaults, ...d};
+  public updateDefaults(d: Partial<LoggerDefaults>) {
+    this.loggerDefaults = { ...this.loggerDefaults, ...d };
   }
-  public send(logDetail: LogDetail|LogDetail[]) {
-    if(!Array.isArray(logDetail)) logDetail = [logDetail];
-    logDetail.forEach(detail => {
-      const {level,str} = this.process(detail);
-      console[level](str);
-    })
+  public log(detail: LogDetail) {
+    const level = detail.level ?? this.loggerDefaults.level;
+    const msgColor = this.resolveColor(detail, level);
+    const str = this.buildStr(detail);
+    console[level](chalk.hex(msgColor)(str));
   }
 }
-export default Logger
+export { Logger, type LogDetail, type LoggerDefaults, type LoggerCstrArgs };
