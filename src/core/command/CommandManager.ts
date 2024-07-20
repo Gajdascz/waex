@@ -1,42 +1,17 @@
-import { promisify } from 'util';
-import { exec as execCb } from 'child_process';
+import { normalizeAsArray } from '../utils/helpers.js';
+import type { Logger } from '../logger/Logger.js';
+import createCommandLogger from './components/commandLogger.js';
+import execute from './components/commandRunner.js';
 import {
   isInBounds,
   getBoundError,
-  normalizeAsArray,
-} from '../base/helpers.js';
-import type { EntityManager } from '../base/types.js';
-import type { Logger } from '../logger/logger.js';
-import createCommandLogger from './commandLogger.js';
+  type CommandManagerType,
+  type Commands,
+  type CommandConfig,
+  type Command,
+  type CommandSelector,
+} from './components/commandManagerUtils.js';
 
-//#region TYPES
-interface CommandConfig {
-  runner: string;
-  cmd: string;
-  args: string[] | [];
-  label: string;
-  logColor: string;
-  infoColor?: string;
-  errorColor?: string;
-  warningColor?: string;
-  indicatorKey?: string;
-  reqPath?: boolean;
-}
-interface Command extends CommandConfig {
-  str: string;
-  [key: string]: string | string[] | [] | undefined | boolean;
-}
-type Commands = Command[];
-type CommandSelector = string | number;
-interface CommandManagerType
-  extends EntityManager<CommandConfig, CommandSelector, Command> {
-  execute: (path: string) => Promise<this>;
-}
-//#endregion
-
-const exec = promisify(execCb);
-
-//#endregion
 class CommandManager implements CommandManagerType {
   private commands: Commands = [];
   private logger;
@@ -46,15 +21,14 @@ class CommandManager implements CommandManagerType {
     if (commands) commands.forEach((cmd) => this.create(cmd));
   }
 
-  private buildCmdStr(runner: string, cmd: string, args: string[] | []) {
-    if (!runner || !cmd)
-      throw new Error(`Command configuration must have runner and command.`);
-    return `${runner} ${cmd}${args.length ? ` ${args.join(` `)}` : ''}`;
+  private buildCmdStr(runner: string, args: string[] | []) {
+    if (!runner) throw new Error(`Command configuration must have runner.`);
+    return `${runner} ${args.length ? args.join(` `) : ''}`;
   }
   public create(config: CommandConfig | CommandConfig[]) {
     config = normalizeAsArray(config);
     config.forEach((cf) => {
-      const cmdStr = this.buildCmdStr(cf.runner, cf.cmd, cf.args);
+      const cmdStr = this.buildCmdStr(cf.runner, cf.args);
       const command = { ...cf, str: cmdStr };
       this.commands.push(command);
       this.logger.created(command);
@@ -88,27 +62,12 @@ class CommandManager implements CommandManagerType {
     this.logger.reset();
     return this;
   }
-  async execute(path: string) {
-    try {
-      for (const command of this.commands) {
-        console.log(command);
-        console.log(command.str);
-        const fullCmd =
-          command.reqPath ? `${command.str} ${path}` : command.str;
-        const { stderr, stdout } = await exec(fullCmd);
-        console.log(stderr);
-        console.log(stdout);
-      }
-    } catch (err) {
-      console.error(err);
+  async execute(filePath: string) {
+    for (const command of this.commands) {
+      const result = await execute(filePath, command);
+      this.logger.executed(result);
     }
     return this;
   }
 }
-export {
-  CommandManager,
-  type CommandConfig,
-  type Command,
-  type CommandManagerType,
-  type Commands,
-};
+export { CommandManager, type Commands, type CommandConfig, type Command };

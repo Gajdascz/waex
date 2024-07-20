@@ -1,0 +1,58 @@
+{
+  "debounceRate": 300,
+  "watcher": {
+    "paths": "./src/**/*.{js,ts}",
+    "options": {
+      "persistent": true,
+
+      "ignored": "/node_modules/",
+      "ignoreInitial": false,
+      "followSymlinks": true,
+      "cwd": ".",
+
+      "usePolling": false,
+      "interval": 100,
+      "binaryInterval": 300,
+      "alwaysStat": false,
+      "awaitWriteFinish": {
+        "stabilityThreshold": 2000,
+        "pollInterval": 100
+      },
+      "ignorePermissionErrors": false,
+      "atomic": true
+    }
+  },
+  "logger": {
+    "label": "[APP]",
+    "colors": {
+      "log": "#87ceeb",
+      "info": "#0dbaff",
+      "error": "#9c0000",
+      "warning": "#805500"
+    },
+    "addIndicators": []
+  },
+  "commands": [
+    {
+      "runner": "npx",
+      "args": ["prettier", "--write"],
+      "label": "[PRETTIER]",
+      "logColor": "#56B3FF",
+      "reqPath": true
+    },
+    {
+      "runner": "npx",
+      "args": ["eslint", "--fix"],
+      "label": "[ESLINT]",
+      "logColor": "#4B32C3",
+      "reqPath": true
+    },
+    {
+      "runner": "npx",
+      "args": ["tsx"],
+      "label": "[TSX]",
+      "logColor": "#0FFFA0",
+      "reqPath": true
+    }
+  ]
+}

@@ -1,12 +1,4 @@
-import type { AsyncProcedure } from './types.js';
-
-const getBoundError = (index: number | string, arr: unknown[]) =>
-  `Provided index is out of bounds: ${arr.length === 0 ? `No commands have been registered` : `| got: ${String(index)} | min: 0 | max: ${String(arr.length - 1)} |`}`;
-const isInBounds = (index: number | string, arr: unknown[]) =>
-  arr.length && +index >= 0 && +index < arr.length;
-
-const isObject = (obj: unknown): obj is Record<string, unknown> =>
-  typeof obj === 'object' && !Array.isArray(obj);
+type AsyncProcedure = (...args: unknown[]) => Promise<void>;
 
 const normalizeAsArray = <T>(t: T | T[]): T[] => {
   if (Array.isArray(t)) return [...t];
@@ -35,11 +27,4 @@ function debounce<F extends AsyncProcedure>(
   };
 }
 
-export {
-  getBoundError,
-  isInBounds,
-  debounce,
-  flatMerge,
-  normalizeAsArray,
-  isObject,
-};
+export { debounce, flatMerge, normalizeAsArray };

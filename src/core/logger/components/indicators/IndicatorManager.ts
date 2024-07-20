@@ -1,32 +1,21 @@
 import chalk from 'chalk';
-import type { EntityManager, LogLevel } from '../base/types.js';
-import { normalizeAsArray } from '../base/helpers.js';
-
-interface IndicatorConfig {
-  key: string;
-  level: LogLevel;
-  color: string;
-  symbol: string;
-}
-interface Indicator extends IndicatorConfig {
-  str: string;
-}
-type Indicators = Record<string, Indicator>;
-type IndicatorSelector = string;
-interface IndicatorManagerType
-  extends EntityManager<IndicatorConfig, IndicatorSelector, Indicator> {
-  readByLevel(level: LogLevel): Indicator | never;
-}
-
-type CreateIndicatorArgs = IndicatorConfig | IndicatorConfig[];
+import type { LogLevel } from '../loggerUtils.js';
+import { normalizeAsArray } from '../../../utils/helpers.js';
+import {
+  BASE_INDICATOR_KEY_SET,
+  getBaseIndicators,
+  type IndicatorManagerType,
+  type Indicator,
+  type Indicators,
+  type IndicatorSelector,
+  type CreateIndicatorArgs,
+  type IndicatorConfig,
+} from './indicatorConfig.js';
 
 class IndicatorManager implements IndicatorManagerType {
   private indicators: Indicators = {};
   private addIndicator(c: IndicatorConfig) {
     this.indicators[c.key] = { ...c, str: chalk.hex(c.color).bold(c.symbol) };
-  }
-  private isRegistered(target: IndicatorSelector) {
-    return target in this.indicators;
   }
   private getNotRegisteredErr(target: IndicatorSelector): Error {
     return new Error(`${target} not found in registered indicators.`);
@@ -38,18 +27,15 @@ class IndicatorManager implements IndicatorManagerType {
     }
   }
   constructor(indicators?: CreateIndicatorArgs) {
-    if (indicators) {
-      const nIndicators = normalizeAsArray(indicators);
-      nIndicators.forEach((ind) => this.create(ind));
-    }
+    const configArr = getBaseIndicators();
+    if (indicators) configArr.push(...normalizeAsArray(indicators));
+    configArr.forEach((cf) => this.create(cf));
   }
 
   public read(target?: IndicatorSelector): Indicator | Indicators {
-    if (target) {
-      if (!this.isRegistered(target)) throw this.getNotRegisteredErr(target);
-      return this.indicators[target];
-    }
-    return structuredClone(this.indicators);
+    if (!target) return structuredClone(this.indicators);
+    if (target in this.indicators) return { ...this.indicators[target] };
+    throw this.getNotRegisteredErr(target);
   }
   public readByLevel(level: LogLevel): Indicator {
     const indicator = this.findFirstOfLevel(level);
@@ -58,21 +44,29 @@ class IndicatorManager implements IndicatorManagerType {
     return indicator;
   }
   public create(config: CreateIndicatorArgs) {
-    if (!Array.isArray(config)) config = [config];
-    config.forEach((cf) => {
-      if (this.isRegistered(cf.key))
+    normalizeAsArray(config).forEach((cf) => {
+      if (cf.key in this.indicators)
         throw new Error(`${cf.key} is already a registered indicator.`);
       this.addIndicator(cf);
     });
     return this;
   }
   public update(target: IndicatorSelector, updateProperties: IndicatorConfig) {
-    if (!this.isRegistered(target)) throw this.getNotRegisteredErr(target);
-    this.addIndicator(updateProperties);
+    if (!(target in this.indicators)) throw this.getNotRegisteredErr(target);
+    if (BASE_INDICATOR_KEY_SET.has(target)) {
+      if (updateProperties.key && updateProperties.key !== target)
+        throw new Error(`Cannot overwrite the key of a base indicator.`);
+    }
+    const mergedProps = { ...this.indicators[target], ...updateProperties };
+    this.addIndicator(mergedProps);
     return this;
   }
   public delete(target: IndicatorSelector) {
-    if (!this.isRegistered(target)) throw this.getNotRegisteredErr(target);
+    if (!(target in this.indicators)) throw this.getNotRegisteredErr(target);
+    if (BASE_INDICATOR_KEY_SET.has(target))
+      throw new Error(
+        `Cannot delete a base indicator. You can update base indicators or add custom ones.`,
+      );
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.indicators[target];
     return this;
@@ -102,14 +96,20 @@ const wrapIndicatorManager = (manager: IndicatorManager) => ({
   clearAllIndicators() {
     return manager.reset();
   },
+  getAllKeys(){
+    const indicators = manager.read();
+    if(Array.isArray(indicators)) {
+      return indicators.map((i:Indicator) => i.key)
+    }
+  }
 });
 export {
   IndicatorManager,
   wrapIndicatorManager,
-  type IndicatorConfig,
+  type IndicatorManagerType,
   type Indicator,
   type Indicators,
   type IndicatorSelector,
-  type IndicatorManagerType,
   type CreateIndicatorArgs,
+  type IndicatorConfig,
 };
