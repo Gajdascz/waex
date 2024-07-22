@@ -63,8 +63,7 @@ class WatchExec {
             };
         if (typeof this.changeHandler === 'function')
             this.watcher.off('change', this.changeHandler);
-        this.changeHandler =
-            this.debounceRate ? debounce(handler, this.debounceRate) : handler;
+        this.changeHandler = this.debounceRate ? debounce(handler, this.debounceRate) : handler;
         this.watcher.on('change', this.changeHandler);
     }
     logger;

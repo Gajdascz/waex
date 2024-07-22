@@ -110,7 +110,7 @@ const wrapCommandManager = (commandManager) => bound(commandManager, {
     reset: commandManager.reset,
     get: commandManager.read,
     execute,
-    logExecuted: commandManager.logger.executed
+    logExecuted: commandManager.logger.executed,
 });
 /* eslint-enable @typescript-eslint/unbound-method */
 const constructAndWrapCommandManager = (logger, commands) => {

@@ -10,7 +10,11 @@
   },
   "scripts": {
     "test": "vitest",
-    "watch": "tsx ./src/index.ts"
+    "watch": "tsx ./src/index.ts",
+    "format": "prettier --write ./",
+    "build:ts": "tsc",
+    "build:typedoc": "typedoc ./src",
+    "build:all": "npm run format && npm run build:ts && npm run build:typedoc"
   },
   "keywords": [],
   "author": "Nolan Gajdascz <github.com/gajdascz>",
@@ -19,32 +23,33 @@
   "devDependencies": {
     "@eslint/compat": "^1.1.0",
     "@eslint/js": "^9.6.0",
-    "@types/eslint__js": "^8.42.3",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.14.10",
-    "chokidar-cli": "^3.0.0",
     "eslint": "^9.6.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jsdoc": "^48.7.0",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.2.0",
-    "eslint-plugin-vitest": "^0.5.4",
-    "jsdoc": "^4.0.3",
     "prettier": "^3.3.2",
     "tsx": "^4.16.2",
     "typedoc": "^0.26.4",
     "typescript": "^5.5.3",
     "typescript-eslint": "^7.16.0",
-    "vitest": "^2.0.3"
+    "vitest": "^2.0.3",
+    "globals": "^15.8.0"
   },
   "dependencies": {
+    "chalk": "^5.3.0",
+    "chokidar": "^3.6.0",
     "luxon": "^3.4.4"
   },
   "files": [
     "dist/**/*"
   ],
+  "homepage": "https://github.com/Gajdascz/waex",
   "repository": {
     "type": "github",
     "url": "https://github.com/Gajdascz/waex"
+  },
+  "bugs": {
+    "url": "https://github.com/Gajdascz/waex/issues"
   }
 }
