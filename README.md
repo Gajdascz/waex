@@ -1,8 +1,8 @@
-# WatchExec
+# waex
 
 :warning: This project is in early development and is not stable. :warning:
 
-WatchExec is a development tool that uses chokidar to watch for file changes and sequentially execute commands on those changed files.
+waex, short for watch execute, is a development tool that uses chokidar to watch for file changes and sequentially execute commands on those changed files.
 
 ## Features
 - **Configuration:** Most of the app is configurable and flexible.
