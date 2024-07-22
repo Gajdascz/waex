@@ -42,5 +42,9 @@
   },
   "files": [
     "dist/**/*"
-  ]
+  ],
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/Gajdascz/waex"
+  }
 }
