@@ -1,19 +1,20 @@
 {
-  "name": "watch-exec",
-  "version": "0.0.0",
-  "main": "index.js",
+  "name": "waex",
+  "description": "Watches for file changes and executes commands.",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "engines": {
     "node": ">= 20.13.1",
     "npm": ">=10.8.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "initWatcher": "tsx ./src/index.ts"
+    "test": "vitest",
+    "watch": "tsx ./src/index.ts"
   },
   "keywords": [],
-  "author": "Nolan Gajdascz",
+  "author": "Nolan Gajdascz <github.com/gajdascz>",
   "license": "GPL-3.0-only",
-  "description": "",
   "type": "module",
   "devDependencies": {
     "@eslint/compat": "^1.1.0",
@@ -22,7 +23,6 @@
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.14.10",
     "chokidar-cli": "^3.0.0",
-    "concurrently": "^8.2.2",
     "eslint": "^9.6.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jsdoc": "^48.7.0",
@@ -34,9 +34,13 @@
     "tsx": "^4.16.2",
     "typedoc": "^0.26.4",
     "typescript": "^5.5.3",
-    "typescript-eslint": "^7.16.0"
+    "typescript-eslint": "^7.16.0",
+    "vitest": "^2.0.3"
   },
   "dependencies": {
     "luxon": "^3.4.4"
-  }
+  },
+  "files": [
+    "dist/**/*"
+  ]
 }

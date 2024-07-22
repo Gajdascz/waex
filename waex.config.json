@@ -1,5 +1,6 @@
 {
   "debounceRate": 300,
+  "limitProcessing": true,
   "watcher": {
     "paths": "./src/**/*.{js,ts}",
     "options": {
@@ -37,21 +38,21 @@
       "runner": "npx",
       "args": ["prettier", "--write"],
       "label": "[PRETTIER]",
-      "logColor": "#56B3FF",
+      "color": "#56B3FF",
       "reqPath": true
     },
     {
       "runner": "npx",
       "args": ["eslint", "--fix"],
       "label": "[ESLINT]",
-      "logColor": "#4B32C3",
+      "color": "#4B32C3",
       "reqPath": true
     },
     {
       "runner": "npx",
       "args": ["tsx"],
       "label": "[TSX]",
-      "logColor": "#0FFFA0",
+      "color": "#0FFFA0",
       "reqPath": true
     }
   ]
