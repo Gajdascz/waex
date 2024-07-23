@@ -35,9 +35,7 @@ const run = async (command: Command, args: string[]): Promise<CommandResult> => 
   // helper getFinalArgs always appends the file path to the end of the command's arguments array.
   const filePath = args[args.length - 1];
   try {
-    const { stdout, stderr } = await exec(cmdStr, {
-      timeout: 1000,
-    });
+    const { stdout, stderr } = await exec(cmdStr);
     return {
       commandObj: command,
       commandStr: cmdStr,
@@ -72,7 +70,8 @@ const getFinalArgs = (command: Command, filePath: string) =>
  */
 const execute = async (filePath: string, command: Command) => {
   const args = getFinalArgs(command, filePath);
-  return await run(command, args);
+  const r = await run(command, args);
+  return r;
 };
 
 export { execute, type CommandResult };
