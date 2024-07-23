@@ -5,8 +5,8 @@ const exec = promisify(execCb);
 const cleanStdStr = (str, filePath) => str
     .trim()
     .split('\n')
-    .filter((line) => line.trim() !== '')
-    .filter((line) => line !== filePath)
+    .map((line) => line.trim())
+    .filter((line) => line !== '' && line !== filePath)
     .join('\n');
 /**
  * Executes a command with the given arguments and returns the result.

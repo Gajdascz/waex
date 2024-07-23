@@ -19,22 +19,22 @@ import { type LoggerConfig } from '../../logger/Logger.js';
  * [depth] - The depth of subdirectories to watch.
  */
 interface ChokidarOptions {
-  persistent: boolean;
-  ignored: string | RegExp;
-  ignoreInitial: boolean;
-  followSymlinks: boolean;
-  cwd: string;
-  usePolling: boolean;
-  interval: number;
-  binaryInterval: number;
-  alwaysStat: boolean;
-  awaitWriteFinish: {
-    stabilityThreshold: number;
-    pollInterval: number;
-  };
-  ignorePermissionErrors: boolean;
-  atomic: boolean | number;
-  depth?: number;
+    persistent: boolean;
+    ignored: string | RegExp;
+    ignoreInitial: boolean;
+    followSymlinks: boolean;
+    cwd: string;
+    usePolling: boolean;
+    interval: number;
+    binaryInterval: number;
+    alwaysStat: boolean;
+    awaitWriteFinish: {
+        stabilityThreshold: number;
+        pollInterval: number;
+    };
+    ignorePermissionErrors: boolean;
+    atomic: boolean | number;
+    depth?: number;
 }
 /**
  * Configuration for the file watcher.
@@ -42,8 +42,8 @@ interface ChokidarOptions {
  * options - The options for the watcher.
  */
 interface WatcherConfig {
-  paths: string | string[];
-  options?: Partial<ChokidarOptions>;
+    paths: string | string[];
+    options?: Partial<ChokidarOptions>;
 }
 /**
  * Configuration options for the application.
@@ -54,11 +54,11 @@ interface WatcherConfig {
  *  - commands: The list of command configurations.
  */
 interface ConfigOptions {
-  debounceRate: number | false;
-  limitProcessing: boolean;
-  watcher: WatcherConfig;
-  logger: LoggerConfig;
-  commands: CommandConfig[];
+    debounceRate: number | false;
+    limitProcessing: boolean;
+    watcher: WatcherConfig;
+    logger: LoggerConfig;
+    commands: CommandConfig[];
 }
 /**
  * The default configuration options for the application.

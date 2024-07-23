@@ -12,8 +12,10 @@ const getTime = () => DateTime.local().toLocaleString(DateTime.TIME_WITH_SECONDS
  * @returns The normalized array.
  */
 const normalizeAsArray = (t) => {
-  if (Array.isArray(t)) return [...t];
-  else return [t];
+    if (Array.isArray(t))
+        return [...t];
+    else
+        return [t];
 };
 /**
  * Merges two objects. Properties from the provided options object will overwrite properties from the default options object.
@@ -22,8 +24,8 @@ const normalizeAsArray = (t) => {
  * @returns The merged object.
  */
 const flatMerge = (providedOpts, defaultOpts) => ({
-  ...defaultOpts,
-  ...providedOpts,
+    ...defaultOpts,
+    ...providedOpts,
 });
 /**
  * Compares two objects and returns the differences.
@@ -31,29 +33,31 @@ const flatMerge = (providedOpts, defaultOpts) => ({
  * @param obj2 - The second object.
  * @returns An object containing the differences.
  */
-const objCompare = (obj1, obj2) =>
-  Object.entries(obj1).reduce((acc, [k, v]) => {
+const objCompare = (obj1, obj2) => Object.entries(obj1).reduce((acc, [k, v]) => {
     if (!(k in obj2)) {
-      acc[k] = { obj1: v, obj2: undefined };
-      return acc;
+        acc[k] = { obj1: v, obj2: undefined };
+        return acc;
     }
     if (typeof k !== typeof obj2[k]) {
-      acc[k] = { obj1: v, obj2: obj2[k] };
-      return acc;
+        acc[k] = { obj1: v, obj2: obj2[k] };
+        return acc;
     }
-    if (v === obj2[k]) return acc;
+    if (v === obj2[k])
+        return acc;
     if (Array.isArray(v)) {
-      if (v.toString() === obj2[k]?.toString()) return acc;
-      acc[k] = { obj1: v, obj2: obj2[k] };
-      return acc;
+        if (v.toString() === obj2[k]?.toString())
+            return acc;
+        acc[k] = { obj1: v, obj2: obj2[k] };
+        return acc;
     }
     if (typeof v === 'object' && v !== null) {
-      const nestedDiff = objCompare(v, obj2[k]);
-      if (Object.keys(nestedDiff).length > 0) acc[k] = nestedDiff;
-      return acc;
+        const nestedDiff = objCompare(v, obj2[k]);
+        if (Object.keys(nestedDiff).length > 0)
+            acc[k] = nestedDiff;
+        return acc;
     }
     return acc;
-  }, {});
+}, {});
 /**
  * Creates a debounced function that delays invoking the provided function until after the specified delay.
  * @template F
@@ -62,13 +66,13 @@ const objCompare = (obj1, obj2) =>
  * @returns The debounced function.
  */
 function debounce(func, delay) {
-  let debounceTimer;
-  return function (...args) {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-      void func.apply(this, args);
-    }, delay);
-  };
+    let debounceTimer;
+    return function (...args) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            void func.apply(this, args);
+        }, delay);
+    };
 }
 /**
  * Binds functions to a specific context.
@@ -77,11 +81,12 @@ function debounce(func, delay) {
  * @returns The record of bound functions.
  */
 const bound = (to, keyValues) => {
-  const result = {};
-  for (const key in keyValues) {
-    if (Object.prototype.hasOwnProperty.call(keyValues, key)) result[key] = keyValues[key].bind(to);
-  }
-  return result;
+    const result = {};
+    for (const key in keyValues) {
+        if (Object.prototype.hasOwnProperty.call(keyValues, key))
+            result[key] = keyValues[key].bind(to);
+    }
+    return result;
 };
 export { debounce, flatMerge, normalizeAsArray, objCompare, getTime, bound };
 //# sourceMappingURL=helpers.js.map

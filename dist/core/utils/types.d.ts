@@ -10,11 +10,11 @@ type Entities<T> = T[] | Record<string, T>;
  * @template Entity - The type of the entities being managed.
  */
 interface EntityManager<EntityConfig, EntitySelector, Entity> {
-  read: (target?: EntitySelector) => Entity | Entities<Entity> | undefined;
-  create: (config: EntityConfig | EntityConfig[]) => this;
-  update: (target: EntitySelector, updateData: EntityConfig) => this;
-  delete: (target: EntitySelector) => this;
-  reset: () => this;
+    read: (target?: EntitySelector) => Entity | Entities<Entity> | undefined;
+    create: (config: EntityConfig | EntityConfig[]) => this;
+    update: (target: EntitySelector, updateData: EntityConfig) => this;
+    delete: (target: EntitySelector) => this;
+    reset: () => this;
 }
 export type { EntityManager };
 //# sourceMappingURL=types.d.ts.map

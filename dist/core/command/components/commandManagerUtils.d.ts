@@ -11,15 +11,15 @@ import type { EntityManager } from '../../utils/types.js';
  *  - [reqPath]: Indicates if the command requires a file path.
  */
 interface CommandConfig {
-  runner: string;
-  args: string[] | [];
-  label: string;
-  color: string;
-  key: string;
-  infoColor?: string;
-  errorColor?: string;
-  warningColor?: string;
-  reqPath?: boolean;
+    runner: string;
+    args: string[] | [];
+    label: string;
+    color: string;
+    key: string;
+    infoColor?: string;
+    errorColor?: string;
+    warningColor?: string;
+    reqPath?: boolean;
 }
 /**
  * Represents a command with additional properties.
@@ -27,8 +27,8 @@ interface CommandConfig {
  *  - [key]: Additional properties.
  */
 interface Command extends CommandConfig {
-  str: string;
-  [key: string]: string | string[] | [] | undefined | boolean;
+    str: string;
+    [key: string]: string | string[] | [] | undefined | boolean;
 }
 /**
  * Array of Command objects.
@@ -57,13 +57,5 @@ declare const getBoundError: (index: number | string, arr: unknown[]) => string;
  * @returns True if the index is within bounds, false otherwise.
  */
 declare const isInBounds: (index: number | string, arr: unknown[]) => boolean | 0;
-export {
-  getBoundError,
-  isInBounds,
-  type Command,
-  type Commands,
-  type CommandManagerType,
-  type CommandConfig,
-  type CommandSelector,
-};
+export { getBoundError, isInBounds, type Command, type Commands, type CommandManagerType, type CommandConfig, type CommandSelector, };
 //# sourceMappingURL=commandManagerUtils.d.ts.map

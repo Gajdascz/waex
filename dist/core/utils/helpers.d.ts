@@ -25,10 +25,7 @@ declare const flatMerge: (providedOpts: object, defaultOpts: object) => object;
  * @param obj2 - The second object.
  * @returns An object containing the differences.
  */
-declare const objCompare: (
-  obj1: Record<string, unknown>,
-  obj2: Record<string, unknown>,
-) => Record<string, unknown>;
+declare const objCompare: (obj1: Record<string, unknown>, obj2: Record<string, unknown>) => Record<string, unknown>;
 /**
  * Creates a debounced function that delays invoking the provided function until after the specified delay.
  * @template F
@@ -36,10 +33,7 @@ declare const objCompare: (
  * @param delay - The delay in milliseconds.
  * @returns The debounced function.
  */
-declare function debounce<F extends AsyncProcedure>(
-  func: F,
-  delay: number,
-): (...args: Parameters<F>) => void;
+declare function debounce<F extends AsyncProcedure>(func: F, delay: number): (...args: Parameters<F>) => void;
 /**
  * Binds functions to a specific context.
  * @param to - The context to bind the functions to.
