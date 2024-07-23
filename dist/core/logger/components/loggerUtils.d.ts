@@ -3,10 +3,10 @@ import type { CreateIndicatorArgs } from './indicators/indicatorConfig.js';
  * Log levels used in the logging system.
  */
 declare const LOG_LEVELS: {
-    readonly log: "log";
-    readonly info: "info";
-    readonly warn: "warn";
-    readonly error: "error";
+  readonly log: 'log';
+  readonly info: 'info';
+  readonly warn: 'warn';
+  readonly error: 'error';
 };
 /**
  * Type representing log levels.
@@ -20,10 +20,10 @@ type LogLevel = (typeof LOG_LEVELS)[keyof typeof LOG_LEVELS];
  * warning - The color for warning level.
  */
 interface LoggerColors {
-    log: string;
-    info: string;
-    error: string;
-    warning: string;
+  log: string;
+  info: string;
+  error: string;
+  warning: string;
 }
 /**
  * Default settings for the logger.
@@ -32,9 +32,9 @@ interface LoggerColors {
  * colors - The default colors for log levels.
  */
 interface LoggerDefaults {
-    label: string;
-    level: LogLevel;
-    colors: LoggerColors;
+  label: string;
+  level: LogLevel;
+  colors: LoggerColors;
 }
 /**
  * Configuration for the logger.
@@ -42,8 +42,8 @@ interface LoggerDefaults {
  * [indicators] - Optional indicators to create.
  */
 interface LoggerConfig {
-    defaults: LoggerDefaults;
-    indicators?: CreateIndicatorArgs;
+  defaults: LoggerDefaults;
+  indicators?: CreateIndicatorArgs;
 }
 /**
  * An entry in the body of a log detail.
@@ -52,9 +52,9 @@ interface LoggerConfig {
  * [color] - The color for the entry.
  */
 interface LogDetailBodyEntry {
-    key: string;
-    value: unknown;
-    color?: string;
+  key: string;
+  value: unknown;
+  color?: string;
 }
 /**
  * The body of a log detail, which is an array of entries.
@@ -69,11 +69,11 @@ type LogDetailBody = LogDetailBodyEntry[];
  * [color] - The color for the log.
  */
 interface LogDetailHead {
-    command: string;
-    indicate?: string;
-    level?: LogLevel;
-    label?: string;
-    color?: string;
+  command: string;
+  indicate?: string;
+  level?: LogLevel;
+  label?: string;
+  color?: string;
 }
 /**
  * Colors for a log detail, allowing partial override of default logger colors.
@@ -85,8 +85,8 @@ type LogDetailColors = Partial<LoggerColors>;
  * [body] - The body section of the log detail.
  */
 interface LogDetail {
-    head: LogDetailHead;
-    body?: LogDetailBody;
+  head: LogDetailHead;
+  body?: LogDetailBody;
 }
 /**
  * Resolves the appropriate color for a log level, using provided or default colors.
@@ -95,7 +95,20 @@ interface LogDetail {
  * @param [providedColors] - Optional colors provided for overriding defaults.
  * @returns The resolved color for the log level.
  */
-declare const resolveColor: (level: LogLevel, defaultColors: LoggerColors, providedColors?: LogDetailColors) => string;
+declare const resolveColor: (
+  level: LogLevel,
+  defaultColors: LoggerColors,
+  providedColors?: LogDetailColors,
+) => string;
 export { resolveColor, LOG_LEVELS };
-export type { LogDetail, LogDetailColors, LogDetailHead, LogDetailBody, LoggerConfig, LogLevel, LoggerDefaults, LoggerColors, };
+export type {
+  LogDetail,
+  LogDetailColors,
+  LogDetailHead,
+  LogDetailBody,
+  LoggerConfig,
+  LogLevel,
+  LoggerDefaults,
+  LoggerColors,
+};
 //# sourceMappingURL=loggerUtils.d.ts.map
